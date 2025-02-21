@@ -1,5 +1,5 @@
 {
-  "name": "pricewise",
+  "name": "BuyWiz",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -17,7 +17,6 @@
     "mongoose": "^7.5.3",
     "next": "latest",
     "nodemailer": "^6.9.5",
-    "pricewise": "file:",
     "react": "latest",
     "react-dom": "latest",
     "react-responsive-carousel": "^3.2.23",
