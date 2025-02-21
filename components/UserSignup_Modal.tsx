@@ -138,6 +138,7 @@ const User_Modal = () => {
                                     </button>
 
                                 </form>
+                                <br></br>
                                 <p>
                                     {isLogin ? "Don't have an account?" : "Already have an account?"}
                                     <a href="#" onClick={toggleForm} style={{ marginLeft: "5px", cursor: "pointer", color: "blue" }}>
