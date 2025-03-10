@@ -15,11 +15,14 @@ const User_Modal = () => {
     const [password, setPassword] = useState('');
     const [isLogin, setLogin] = useState(true);
     const [message, setMessage] = useState("");
+    const [showPassword, setShowPassword] = useState(false);
 
     const toggleForm = () => {
         setLogin(!isLogin);
     };
-
+    const togglePasswordVisibility = () => {
+        setShowPassword(!showPassword);
+    };
 
     const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -113,15 +116,16 @@ const User_Modal = () => {
 
                                     <div className="dialog-input_container">
                                         <Image
-                                            src="/assets/icons/mail.svg"
+                                            src={showPassword ? "/assets/icons/eye.svg" :"/assets/icons/eye-closed.svg"}
                                             alt='mail'
                                             width={18}
                                             height={18}
+                                            onClick={togglePasswordVisibility}
                                         />
 
-                                        <input
+                                        <input  
                                             required
-                                            type="password"
+                                            type={showPassword ? "text" : "password"}
                                             id="password"
                                             value={password}
                                             onChange={(e) => setPassword(e.target.value)}
