@@ -1,7 +1,7 @@
 import Modal from "@/components/Modal";
 import PriceInfoCard from "@/components/PriceInfoCard";
 import ProductCard from "@/components/ProductCard";
-import { getProductById, getSimilarProducts } from "@/lib/actions"
+import { getProductById, getSimilarProducts } from "@/lib/actions";
 import { formatNumber } from "@/lib/utils";
 import { Product } from "@/types";
 import Image from "next/image";
@@ -9,14 +9,19 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 
 type Props = {
-  params: { id: string }
-}
+  params: { id: string };
+};
 
-const ProductDetails = async ({ params: { id } }: Props) => {
+const ProductDetails = async ({ params }: Props) => {
+  // Wait for params to be resolved
+  const { id } = await params;
+
+  // Fetch product by id
   const product: Product = await getProductById(id);
 
-  if(!product) redirect('/')
+  if (!product) redirect('/'); // Redirect if product is not found
 
+  // Fetch similar products
   const similarProducts = await getSimilarProducts(id);
 
   return (
@@ -121,7 +126,7 @@ const ProductDetails = async ({ params: { id } }: Props) => {
 
               <p className="text-sm text-black opacity-50">
                 <span className="text-primary-green font-semibold">93% </span> of
-                buyers have recommeded this.
+                buyers have recommended this.
               </p>
             </div>
           </div>
@@ -192,7 +197,7 @@ const ProductDetails = async ({ params: { id } }: Props) => {
         </div>
       )}
     </div>
-  )
-}
+  );
+};
 
-export default ProductDetails
+export default ProductDetails;

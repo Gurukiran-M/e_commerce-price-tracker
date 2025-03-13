@@ -1,5 +1,3 @@
-"use server"
-
 import { EmailContent, EmailProductInfo, NotificationType } from '@/types';
 import nodemailer from 'nodemailer';
 
@@ -8,100 +6,171 @@ const Notification = {
   CHANGE_OF_STOCK: 'CHANGE_OF_STOCK',
   LOWEST_PRICE: 'LOWEST_PRICE',
   THRESHOLD_MET: 'THRESHOLD_MET',
-}
+};
 
 export async function generateEmailBody(
   product: EmailProductInfo,
   type: NotificationType
-  ) {
+) {
   const THRESHOLD_PERCENTAGE = 40;
-  // Shorten the product title
   const shortenedTitle =
-    product.title.length > 20
-      ? `${product.title.substring(0, 20)}...`
-      : product.title;
+    product.title.length > 20 ? `${product.title.substring(0, 20)}...` : product.title;
 
-  let subject = "";
-  let body = "";
+  let subject = '';
+  let body = '';
 
   switch (type) {
     case Notification.WELCOME:
       subject = `Welcome to Price Tracking for ${shortenedTitle}`;
       body = `
-        <div>
-          <h2>Welcome to BuyWiz 🚀</h2>
-          <p>You are now tracking ${product.title}.</p>
-          <p>Here's an example of how you'll receive updates:</p>
-          <div style="border: 1px solid #ccc; padding: 10px; background-color: #f8f8f8;">
-            <h3>${product.title} is back in stock!</h3>
-            <p>We're excited to let you know that ${product.title} is now back in stock.</p>
-            <p>Don't miss out - <a href="${product.url}" target="_blank" rel="noopener noreferrer">buy it now</a>!</p>
-            <img src="https://i.ibb.co/pwFBRMC/Screenshot-2023-09-26-at-1-47-50-AM.png" alt="Product Image" style="max-width: 100%;" />
-          </div>
-          <p>Stay tuned for more updates on ${product.title} and other products you're tracking.</p>
-        </div>
+        <html>
+          <head>
+            <style>
+              body { font-family: Arial, sans-serif; background-color: #f4f4f4; color: #333; margin: 0; padding: 0; }
+              .email-container { max-width: 600px; margin: 20px auto; background-color: #fff; padding: 20px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); }
+              h2 { color: #4CAF50; }
+              a { color: #007BFF; text-decoration: none; }
+              .button { background-color: #28a745; color: white; padding: 10px 20px; text-align: center; border-radius: 5px; display: inline-block; }
+              .footer { text-align: center; font-size: 12px; color: #777; margin-top: 20px; }
+              .footer a { color: #777; text-decoration: none; }
+              .product-image { width: 100%; max-width: 400px; border-radius: 8px; margin-top: 20px; }
+            </style>
+          </head>
+          <body>
+            <div class="email-container">
+              <h2>Welcome to BuyWiz 🚀</h2>
+              <p>You are now tracking ${product.title}. We'll keep you updated on any changes!</p>
+              <p>Here's an example of how you'll receive updates:</p>
+              <div style="border: 1px solid #ccc; padding: 10px; background-color: #f8f8f8;">
+                <h3>${product.title} is back in stock!</h3>
+                <p>We're excited to let you know that ${product.title} is now back in stock.</p>
+                <p>Don't miss out - <a href="${product.url}" target="_blank" rel="noopener noreferrer" class="button">Buy it now</a>!</p>
+                <img class="product-image" src="https://i.ibb.co/pwFBRMC/Screenshot-2023-09-26-at-1-47-50-AM.png" alt="Product Image"/>
+              </div>
+              <p>Stay tuned for more updates on ${product.title} and other products you're tracking.</p>
+              <div class="footer">
+                <p>You're receiving this email because you signed up for BuyWiz updates.</p>
+                <p><a href="${product.url}">Unsubscribe</a> if you'd no longer like to receive updates.</p>
+              </div>
+            </div>
+          </body>
+        </html>
       `;
       break;
 
     case Notification.CHANGE_OF_STOCK:
       subject = `${shortenedTitle} is now back in stock!`;
       body = `
-        <div>
-          <h4>Hey, ${product.title} is now restocked! Grab yours before they run out again!</h4>
-          <p>See the product <a href="${product.url}" target="_blank" rel="noopener noreferrer">here</a>.</p>
-        </div>
+        <html>
+          <head>
+            <style>
+              body { font-family: Arial, sans-serif; background-color: #f4f4f4; color: #333; margin: 0; padding: 0; }
+              .email-container { max-width: 600px; margin: 20px auto; background-color: #fff; padding: 20px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); }
+              h2 { color: #4CAF50; }
+              a { color: #007BFF; text-decoration: none; }
+              .footer { text-align: center; font-size: 12px; color: #777; margin-top: 20px; }
+              .footer a { color: #777; text-decoration: none; }
+            </style>
+          </head>
+          <body>
+            <div class="email-container">
+              <h2>Great News!</h2>
+              <h4>${product.title} is now back in stock! 🎉</h4>
+              <p>Grab it before it runs out again! <a href="${product.url}" target="_blank" rel="noopener noreferrer">Check it out here</a>.</p>
+              <div class="footer">
+                <p>You're receiving this email because you're tracking ${product.title} through BuyWiz.</p>
+                <p><a href="${product.url}">Unsubscribe</a> from notifications if you'd prefer not to receive updates.</p>
+              </div>
+            </div>
+          </body>
+        </html>
       `;
       break;
 
     case Notification.LOWEST_PRICE:
       subject = `Lowest Price Alert for ${shortenedTitle}`;
       body = `
-        <div>
-          <h4>Hey, ${product.title} has reached its lowest price ever!!</h4>
-          <p>Grab the product <a href="${product.url}" target="_blank" rel="noopener noreferrer">here</a> now.</p>
-        </div>
+        <html>
+          <head>
+            <style>
+              body { font-family: Arial, sans-serif; background-color: #f4f4f4; color: #333; margin: 0; padding: 0; }
+              .email-container { max-width: 600px; margin: 20px auto; background-color: #fff; padding: 20px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); }
+              h2 { color: #4CAF50; }
+              a { color: #007BFF; text-decoration: none; }
+              .footer { text-align: center; font-size: 12px; color: #777; margin-top: 20px; }
+              .footer a { color: #777; text-decoration: none; }
+            </style>
+          </head>
+          <body>
+            <div class="email-container">
+              <h2>Lowest Price Alert for ${shortenedTitle} 🚨</h2>
+              <h4>${product.title} is now at its lowest price ever! 🤑</h4>
+              <p>Don't wait! Grab it now before the price goes up again. <a href="${product.url}" target="_blank" rel="noopener noreferrer">Buy it here</a>.</p>
+              <div class="footer">
+                <p>You're receiving this email because you're tracking ${product.title} through BuyWiz.</p>
+                <p><a href="${product.url}">Unsubscribe</a> if you'd prefer not to receive updates.</p>
+              </div>
+            </div>
+          </body>
+        </html>
       `;
       break;
 
     case Notification.THRESHOLD_MET:
       subject = `Discount Alert for ${shortenedTitle}`;
       body = `
-        <div>
-          <h4>Hey, ${product.title} is now available at a discount more than ${THRESHOLD_PERCENTAGE}%!</h4>
-          <p>Grab it right away from <a href="${product.url}" target="_blank" rel="noopener noreferrer">here</a>.</p>
-        </div>
+        <html>
+          <head>
+            <style>
+              body { font-family: Arial, sans-serif; background-color: #f4f4f4; color: #333; margin: 0; padding: 0; }
+              .email-container { max-width: 600px; margin: 20px auto; background-color: #fff; padding: 20px; border-radius: 10px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); }
+              h2 { color: #4CAF50; }
+              a { color: #007BFF; text-decoration: none; }
+              .footer { text-align: center; font-size: 12px; color: #777; margin-top: 20px; }
+              .footer a { color: #777; text-decoration: none; }
+            </style>
+          </head>
+          <body>
+            <div class="email-container">
+              <h2>Discount Alert! 🎉</h2>
+              <h4>${product.title} is now available at a discount of more than ${THRESHOLD_PERCENTAGE}%!</h4>
+              <p>Don't miss out! <a href="${product.url}" target="_blank" rel="noopener noreferrer">Buy it now</a>.</p>
+              <div class="footer">
+                <p>You're receiving this email because you're tracking ${product.title} through BuyWiz.</p>
+                <p><a href="${product.url}">Unsubscribe</a> if you'd prefer not to receive updates.</p>
+              </div>
+            </div>
+          </body>
+        </html>
       `;
       break;
 
     default:
-      throw new Error("Invalid notification type.");
+      throw new Error('Invalid notification type.');
   }
 
   return { subject, body };
 }
 
 const transporter = nodemailer.createTransport({
-  pool: true,
-  service: 'hotmail',
-  port: 2525,
+  service: 'gmail',
   auth: {
-    user: 'javascriptmastery@outlook.com',
-    pass: process.env.EMAIL_PASSWORD,
+    user: 'buywiz11@gmail.com',
+    pass: process.env.GMAIL_APP_PASSWORD,
   },
-  maxConnections: 1
-})
+});
 
 export const sendEmail = async (emailContent: EmailContent, sendTo: string[]) => {
   const mailOptions = {
-    from: 'javascriptmastery@outlook.com',
+    from: 'buywiz11@gmail.com',
     to: sendTo,
     html: emailContent.body,
     subject: emailContent.subject,
-  }
+  };
 
   transporter.sendMail(mailOptions, (error: any, info: any) => {
-    if(error) return console.log(error);
-    
+    if (error) return console.log(error);
+
     console.log('Email sent: ', info);
-  })
-}
+  });
+};
