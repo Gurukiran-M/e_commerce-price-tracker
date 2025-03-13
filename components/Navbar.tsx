@@ -1,13 +1,36 @@
+"use client"
 import Image from 'next/image'
 import Link from 'next/link'
+import UserProfile from './UserProfile'
+import { useEffect, useState } from 'react'
 
 const navIcons = [
   { src: '/assets/icons/search.svg', alt: 'search' },
   { src: '/assets/icons/black-heart.svg', alt: 'heart' },
-  { src: '/assets/icons/user.svg', alt: 'user' },
+  // { src: '/assets/icons/user.svg', alt: 'user' },
 ]
 
 const Navbar = () => {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    // Check login state from localStorage
+    const user = localStorage.getItem("username"); 
+    setIsLoggedIn(!!user); // Convert to boolean
+
+    // Listen for changes in localStorage
+    const handleStorageChange = () => {
+      const updatedUser = localStorage.getItem("username");
+      setIsLoggedIn(!!updatedUser);
+    };
+
+    window.addEventListener("storage", handleStorageChange);
+
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+    };
+  }, []);
+
   return (
     <header className="w-full">
       <nav className="nav">
@@ -35,6 +58,7 @@ const Navbar = () => {
               className="object-contain"
             />
           ))}
+           {isLoggedIn && <UserProfile />}
         </div>
       </nav>
     </header>

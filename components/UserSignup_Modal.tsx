@@ -1,21 +1,37 @@
 "use client"
-import { useState } from "react"; 
-import { FormEvent, Fragment} from 'react'
+import { useEffect, useState } from "react";
+import { FormEvent, Fragment } from 'react'
 import { Dialog, Transition } from '@headlessui/react'
 import Image from 'next/image'
-import { tree } from 'next/dist/build/templates/app-page'
+import {getUsernameByEmail} from '@/lib/actions/getUsernameByEmail'
 import { Login } from '@/lib/actions/login'
 import { Signup } from '@/lib/actions/signup'
-
 
 const User_Modal = () => {
     let [isOpen, setIsOpen] = useState(true)
     //   const [isSubmitting, setIsSubmitting] = useState(false);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [Username, setUser] = useState('');
     const [isLogin, setLogin] = useState(true);
     const [message, setMessage] = useState("");
     const [showPassword, setShowPassword] = useState(false);
+    const [isLocalStorageAvailable, setIsLocalStorageAvailable] = useState(false);
+    
+    useEffect(() => {
+        if (typeof window !== "undefined") {
+            const username = localStorage.getItem("username");
+            setIsLocalStorageAvailable(username !== null);
+        }
+    }, []);
+
+    useEffect(() => {
+        if (Username) {
+            localStorage.setItem("username", Username);
+            console.log("Updated localStorage with Username:", Username);
+            window.dispatchEvent(new Event("storage"));
+        }
+    }, [Username]);
 
     const toggleForm = () => {
         setLogin(!isLogin);
@@ -28,17 +44,28 @@ const User_Modal = () => {
         e.preventDefault();
         let response;
         if (isLogin) {
-            response=await Login(email, password);
+            response = await Login(email, password);
         } else {
-            response = await Signup(email, password);
+            response = await Signup(email, password, Username);
         }
         if (response && response.message) {
             alert(response.message);
             setMessage(response.message);
+            // console.log(Username);
+            if(isLogin){
+                const fetchedUsername = await getUsernameByEmail(email); 
+                console.log("Fetched Username:", fetchedUsername);
+                if (fetchedUsername)
+                    setUser(fetchedUsername);
+            }
+            // console.log(Username);
+            else
+                localStorage.setItem("username",Username);
+            // console.log(localStorage.getItem("username"));
         }
         setEmail('');
         setPassword('');
-        if(response.success) {
+        if (response.success) {
             closeModal();
         }
     }
@@ -48,9 +75,10 @@ const User_Modal = () => {
     const closeModal = () => setIsOpen(false);
 
     return (
+        !isLocalStorageAvailable  &&(
         <>
             <Transition appear show={isOpen} as={Fragment}>
-                <Dialog as="div" onClose={closeModal} className="dialog-container">
+                <Dialog as="div" onClose={() => {}} className="dialog-container">
                     <div className="min-h-screen px-4 text-center">
                         <Transition.Child
                             as={Fragment}
@@ -114,16 +142,37 @@ const User_Modal = () => {
                                         />
                                     </div>
 
+                                    {!isLogin && (
+                                        <div className="dialog-input_container">
+                                            <Image
+                                                src="/assets/icons/profile-circle.svg"
+                                                alt="profile"
+                                                width={18}
+                                                height={18}
+                                            />
+
+                                            <input
+                                                required
+                                                type="text"
+                                                id="Username"
+                                                value={Username}
+                                                onChange={(e) => setUser(e.target.value)}
+                                                placeholder="Enter Username"
+                                                className="dialog-input"
+                                            />
+                                        </div>
+                                    )}
+
                                     <div className="dialog-input_container">
                                         <Image
-                                            src={showPassword ? "/assets/icons/eye.svg" :"/assets/icons/eye-closed.svg"}
-                                            alt='mail'
+                                            src={showPassword ? "/assets/icons/eye.svg" : "/assets/icons/eye-closed.svg"}
+                                            alt='Password'
                                             width={18}
                                             height={18}
                                             onClick={togglePasswordVisibility}
                                         />
 
-                                        <input  
+                                        <input
                                             required
                                             type={showPassword ? "text" : "password"}
                                             id="password"
@@ -156,6 +205,7 @@ const User_Modal = () => {
             </Transition>
         </>
     )
+    );
 }
 
 export default User_Modal

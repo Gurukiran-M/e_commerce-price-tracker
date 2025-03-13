@@ -2,7 +2,7 @@
 import { connectToDB } from "../mongoose";
 import Users from "../models/users.model";
 
-export async function Signup(email: string, password: string) {
+export async function Signup(email: string, password: string,Username: string) {
     try {
         await connectToDB();
 
@@ -13,8 +13,8 @@ export async function Signup(email: string, password: string) {
             const newUser = new Users({
                 email,
                 password: Users.prototype.generateHash(password),
+                Username,
             });
-
             await newUser.save();
             return { success: true, message: "User Registration successful!" };
         }
