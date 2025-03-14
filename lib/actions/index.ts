@@ -45,8 +45,8 @@ export async function scrapeAndStoreProduct(productUrl: string, email: string) {
       { upsert: true, new: true }
     );
     // const find_user=await Product.findOne({user_email: email});
-    // revalidatePath(`/products/${newProduct._id}`};
-    revalidatePath(`/products/${newProduct._id}?email=${email}`);
+    revalidatePath(`/products/${newProduct._id}`);
+    //revalidatePath(`/products/${newProduct._id}?email=${email}`);
     
   } catch (error: any) {
     throw new Error(`Failed to create/update product: ${error.message}`)
