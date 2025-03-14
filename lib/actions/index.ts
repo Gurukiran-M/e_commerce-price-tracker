@@ -8,7 +8,7 @@ import { getAveragePrice, getHighestPrice, getLowestPrice } from "../utils";
 import { User } from "@/types";
 import { generateEmailBody, sendEmail } from "../nodemailer";
 
-export async function scrapeAndStoreProduct(productUrl: string) {
+export async function scrapeAndStoreProduct(productUrl: string, email: string) {
   if(!productUrl) return;
 
   try {
@@ -17,7 +17,7 @@ export async function scrapeAndStoreProduct(productUrl: string) {
     const scrapedProduct = await scrapeAmazonProduct(productUrl);
 
     if(!scrapedProduct) return;
-
+    
     let product = scrapedProduct;
 
     const existingProduct = await Product.findOne({ url: scrapedProduct.url });
@@ -39,11 +39,15 @@ export async function scrapeAndStoreProduct(productUrl: string) {
 
     const newProduct = await Product.findOneAndUpdate(
       { url: scrapedProduct.url },
-      product,
+      {
+      user_email: email,
+      ...product },
       { upsert: true, new: true }
     );
-
-    revalidatePath(`/products/${newProduct._id}`);
+    // const find_user=await Product.findOne({user_email: email});
+    // revalidatePath(`/products/${newProduct._id}`};
+    revalidatePath(`/products/${newProduct._id}?email=${email}`);
+    
   } catch (error: any) {
     throw new Error(`Failed to create/update product: ${error.message}`)
   }
@@ -62,6 +66,7 @@ export async function getProductById(productId: string) {
     console.log(error);
   }
 }
+
 
 export async function getAllProducts() {
   try {
