@@ -10,20 +10,20 @@ import { generateEmailBody, sendEmail } from "../nodemailer";
 import Users from "../models/users.model";
 
 export async function scrapeAndStoreProduct(productUrl: string, email: string) {
-  if(!productUrl) return;
+  if (!productUrl) return;
 
   try {
     connectToDB();
 
     const scrapedProduct = await scrapeAmazonProduct(productUrl);
 
-    if(!scrapedProduct) return;
-    
+    if (!scrapedProduct) return;
+
     let product = scrapedProduct;
 
     const existingProduct = await Product.findOne({ url: scrapedProduct.url });
 
-    if(existingProduct) {
+    if (existingProduct) {
       const updatedPriceHistory: any = [
         ...existingProduct.priceHistory,
         { price: scrapedProduct.currentPrice }
@@ -41,8 +41,9 @@ export async function scrapeAndStoreProduct(productUrl: string, email: string) {
     const newProduct = await Product.findOneAndUpdate(
       { url: scrapedProduct.url },
       {
-      user_email: email,
-      ...product },
+        user_email: email,
+        ...product
+      },
       { upsert: true, new: true }
     );
 
@@ -57,7 +58,8 @@ export async function scrapeAndStoreProduct(productUrl: string, email: string) {
 
     revalidatePath(`/products/${newProduct._id}`);
     //revalidatePath(`/products/${newProduct._id}?email=${email}`);
-    
+
+    return { "id": newProduct._id }    // Return product id
   } catch (error: any) {
     throw new Error(`Failed to create/update product: ${error.message}`)
   }
@@ -69,7 +71,7 @@ export async function getProductById(productId: string) {
 
     const product = await Product.findOne({ _id: productId });
 
-    if(!product) return null;
+    if (!product) return null;
 
     return product;
   } catch (error) {
@@ -112,7 +114,7 @@ export async function getSimilarProducts(productId: string) {
 
     const currentProduct = await Product.findById(productId);
 
-    if(!currentProduct) return null;
+    if (!currentProduct) return null;
 
     const similarProducts = await Product.find({
       _id: { $ne: productId },

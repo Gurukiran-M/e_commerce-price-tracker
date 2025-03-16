@@ -6,7 +6,7 @@ import { formatNumber } from "@/lib/utils";
 import { Product } from "@/types";
 import Image from "next/image";
 import Link from "next/link";
-import { redirect} from "next/navigation";
+import { redirect } from "next/navigation";
 
 // type Props = {
 //   params: { id: string };
@@ -32,7 +32,7 @@ const ProductDetails = async ({ params }: Props) => {
     <div className="product-container">
       <div className="flex gap-28 xl:flex-row flex-col">
         <div className="product-image">
-          <Image 
+          <Image
             src={product.image}
             alt={product.title}
             width={580}
@@ -59,7 +59,7 @@ const ProductDetails = async ({ params }: Props) => {
 
             <div className="flex items-center gap-3">
               <div className="product-hearts">
-                <Image 
+                <Image
                   src="/assets/icons/red-heart.svg"
                   alt="heart"
                   width={20}
@@ -72,7 +72,7 @@ const ProductDetails = async ({ params }: Props) => {
               </div>
 
               <div className="p-2 bg-white-200 rounded-10">
-                <Image 
+                <Image
                   src="/assets/icons/bookmark.svg"
                   alt="bookmark"
                   width={20}
@@ -81,7 +81,7 @@ const ProductDetails = async ({ params }: Props) => {
               </div>
 
               <div className="p-2 bg-white-200 rounded-10">
-                <Image 
+                <Image
                   src="/assets/icons/share.svg"
                   alt="share"
                   width={20}
@@ -104,7 +104,7 @@ const ProductDetails = async ({ params }: Props) => {
             <div className="flex flex-col gap-4">
               <div className="flex gap-3">
                 <div className="product-stars">
-                  <Image 
+                  <Image
                     src="/assets/icons/star.svg"
                     alt="star"
                     width={16}
@@ -116,7 +116,7 @@ const ProductDetails = async ({ params }: Props) => {
                 </div>
 
                 <div className="product-reviews">
-                  <Image 
+                  <Image
                     src="/assets/icons/comment.svg"
                     alt="comment"
                     width={16}
@@ -137,22 +137,22 @@ const ProductDetails = async ({ params }: Props) => {
 
           <div className="my-7 flex flex-col gap-5">
             <div className="flex gap-5 flex-wrap">
-              <PriceInfoCard 
+              <PriceInfoCard
                 title="Current Price"
                 iconSrc="/assets/icons/price-tag.svg"
                 value={`${product.currency} ${formatNumber(product.currentPrice)}`}
               />
-              <PriceInfoCard 
+              <PriceInfoCard
                 title="Average Price"
                 iconSrc="/assets/icons/chart.svg"
                 value={`${product.currency} ${formatNumber(product.averagePrice)}`}
               />
-              <PriceInfoCard 
+              <PriceInfoCard
                 title="Highest Price"
                 iconSrc="/assets/icons/arrow-up.svg"
                 value={`${product.currency} ${formatNumber(product.highestPrice)}`}
               />
-              <PriceInfoCard 
+              <PriceInfoCard
                 title="Lowest Price"
                 iconSrc="/assets/icons/arrow-down.svg"
                 value={`${product.currency} ${formatNumber(product.lowestPrice)}`}
@@ -175,18 +175,17 @@ const ProductDetails = async ({ params }: Props) => {
           </div>
         </div>
 
-        <button className="btn w-fit mx-auto flex items-center justify-center gap-3 min-w-[200px]">
-          <Image 
-            src="/assets/icons/bag.svg"
-            alt="check"
-            width={22}
-            height={22}
-          />
-
-          <Link href="/" className="text-base text-white">
+        <Link href={`${product.url}`} target="_blank" className="text-base text-white">
+          <button className="btn w-fit mx-auto flex items-center justify-center gap-3 min-w-[200px]">
+            <Image
+              src="/assets/icons/bag.svg"
+              alt="check"
+              width={22}
+              height={22}
+            />
             Buy Now
-          </Link>
-        </button>
+          </button>
+        </Link>
       </div>
 
       {similarProducts && similarProducts?.length > 0 && (
