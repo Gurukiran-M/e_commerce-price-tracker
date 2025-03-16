@@ -27,6 +27,15 @@ export type Product = {
   users?: User[];
 };
 
+export type SearchResult = {
+  productName: string,
+  currentPrice: number,
+  currency: string,
+  productLink: string,
+  thumbnail: string,
+  site: string
+}
+
 export type NotificationType =
   | "WELCOME"
   | "CHANGE_OF_STOCK"
