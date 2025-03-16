@@ -27,13 +27,13 @@ const isValidAmazonProductURL = (url: string) => {
 const Searchbar = () => {
   const [searchPrompt, setSearchPrompt] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  // const [email, setEmail] = useState("");
-  // useEffect(() => {
-  //   const storedEmail = localStorage.getItem("email");
-  //   if (storedEmail) {
-  //     setEmail(storedEmail);
-  //   }
-  // }, []);
+  const [email, setEmail] = useState("");
+  useEffect(() => {
+    const storedEmail = localStorage.getItem("email");
+    if (storedEmail) {
+      setEmail(storedEmail);
+    }
+  }, []);
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -43,9 +43,7 @@ const Searchbar = () => {
     if (!isValidLink) return alert('Please provide a valid Amazon link')
 
     try {
-      setIsLoading(true);
-      // Scrape the product page
-      // console.log(email);      
+      setIsLoading(true);   
       const userEmail = getCookie("user_email");
       console.log(userEmail);
       const product = await scrapeAndStoreProduct(searchPrompt,userEmail);

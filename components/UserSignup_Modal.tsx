@@ -34,6 +34,14 @@ const User_Modal = () => {
         }
     }, [Username]);
 
+    useEffect(() => {
+        if (email) {
+            localStorage.setItem("email", email);
+            console.log("Email stored:", email);
+        }
+    }, [email]);
+  
+
     const toggleForm = () => {
         setLogin(!isLogin);
     };

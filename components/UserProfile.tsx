@@ -16,6 +16,7 @@ const UserProfile = () => {
 
   const handleLogout = () => {
     localStorage.removeItem("username"); // Remove username from storage
+    localStorage.removeItem("email");
     document.cookie = "user_email=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
     setUsername(null); // Reset state
     setIsDropdownOpen(false); // Close dropdown
