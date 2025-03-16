@@ -4,7 +4,6 @@ import Image from "next/image"
 import { getAllProducts } from "@/lib/actions"
 import ProductCard from "@/components/ProductCard"
 import User_Modal from "@/components/UserSignup_Modal"
-<<<<<<< HEAD
 import { cookies } from "next/headers";
 import { connectToDB } from "@/lib/mongoose"
 import Product from "@/lib/models/product.model"
@@ -26,9 +25,7 @@ const Home = async () => {
   }
   else
     console.log("userEmail not found");
-=======
 
->>>>>>> b93c387a7646e2516264ff3396db6a9ceb3c1ac6
   return (
     <>
       <section className="px-6 md:px-20 py-24">

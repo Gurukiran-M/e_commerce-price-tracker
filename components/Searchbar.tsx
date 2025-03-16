@@ -28,17 +28,12 @@ const Searchbar = () => {
   const [searchPrompt, setSearchPrompt] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   // const [email, setEmail] = useState("");
-
-<<<<<<< HEAD
   // useEffect(() => {
   //   const storedEmail = localStorage.getItem("email");
   //   if (storedEmail) {
   //     setEmail(storedEmail);
   //   }
   // }, []);
-=======
-
->>>>>>> b93c387a7646e2516264ff3396db6a9ceb3c1ac6
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -50,14 +45,11 @@ const Searchbar = () => {
     try {
       setIsLoading(true);
       // Scrape the product page
-<<<<<<< HEAD
       // console.log(email);      
       const userEmail = getCookie("user_email");
       console.log(userEmail);
       const product = await scrapeAndStoreProduct(searchPrompt,userEmail);
       if (product) open(`products/${product?.id}`, '_blank')          // Open product page after scraping
-=======
->>>>>>> b93c387a7646e2516264ff3396db6a9ceb3c1ac6
     } catch (error) {
       console.log(error);
     } finally {
