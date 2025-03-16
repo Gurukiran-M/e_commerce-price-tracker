@@ -6,6 +6,7 @@ import Image from 'next/image'
 import {getUsernameByEmail} from '@/lib/actions/getUsernameByEmail'
 import { Login } from '@/lib/actions/login'
 import { Signup } from '@/lib/actions/signup'
+import { revalidate } from "@/app/api/cron/route";
 
 const User_Modal = () => {
     let [isOpen, setIsOpen] = useState(true)
@@ -43,6 +44,7 @@ const User_Modal = () => {
     const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         let response;
+        document.cookie = `user_email=${email}; path=/`;
         if (isLogin) {
             response = await Login(email, password);
         } else {
@@ -67,6 +69,7 @@ const User_Modal = () => {
         setPassword('');
         if (response.success) {
             closeModal();
+            window.location.reload();
         }
     }
 

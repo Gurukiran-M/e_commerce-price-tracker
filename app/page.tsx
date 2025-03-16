@@ -4,10 +4,26 @@ import Image from "next/image"
 import { getAllProducts } from "@/lib/actions"
 import ProductCard from "@/components/ProductCard"
 import User_Modal from "@/components/UserSignup_Modal"
+import { cookies } from "next/headers";
+import { connectToDB } from "@/lib/mongoose"
+import Product from "@/lib/models/product.model"
 
 const Home = async () => {
-  const allProducts = await getAllProducts();
-
+  const cookieStore = await cookies();
+  const userEmail = cookieStore.get("user_email")?.value;
+  console.log(userEmail);
+  let allProducts = [];
+  if(userEmail){
+    const ProductIds = await getAllProducts(userEmail);
+    // console.log(ProductIds);
+    if (ProductIds.length > 0) {
+      connectToDB();
+      allProducts = await Product.find({ _id: { $in: ProductIds } });
+      // console.log("Fetched Products:", allProducts);
+    }
+  }
+  else
+    console.log("userEmail not found");
   return (
     <>
       <section className="px-6 md:px-20 py-24">
@@ -44,12 +60,12 @@ const Home = async () => {
         <h2 className="section-text">Recent Search</h2>
 
         <div className="flex flex-wrap gap-x-8 gap-y-16">
-          {allProducts?.map((product) => (
+          {allProducts?.map((product) => (          
             <ProductCard key={product._id} product={product} />
           ))}
         </div>
       </section>
-    </>
+      </> 
   )
 }
 

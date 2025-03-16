@@ -2,6 +2,7 @@
 
 import { scrapeAndStoreProduct } from '@/lib/actions';
 import { FormEvent, useEffect, useState } from 'react'
+import getCookie from '../lib/actions/getCookie';
 
 const isValidAmazonProductURL = (url: string) => {
   try {
@@ -22,18 +23,18 @@ const isValidAmazonProductURL = (url: string) => {
   return false;
 }
 
+
 const Searchbar = () => {
   const [searchPrompt, setSearchPrompt] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [email, setEmail] = useState("");
+  // const [email, setEmail] = useState("");
 
-  useEffect(() => {
-    const storedEmail = localStorage.getItem("email");
-    if (storedEmail) {
-      setEmail(storedEmail);
-    }
-  }, []);
-  
+  // useEffect(() => {
+  //   const storedEmail = localStorage.getItem("email");
+  //   if (storedEmail) {
+  //     setEmail(storedEmail);
+  //   }
+  // }, []);
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -46,8 +47,10 @@ const Searchbar = () => {
       setIsLoading(true);
 
       // Scrape the product page
-      console.log(email);
-      const product = await scrapeAndStoreProduct(searchPrompt,email);
+      // console.log(email);      
+      const userEmail = getCookie("user_email");
+      console.log(userEmail);
+      const product = await scrapeAndStoreProduct(searchPrompt,userEmail);
     } catch (error) {
       console.log(error);
     } finally {

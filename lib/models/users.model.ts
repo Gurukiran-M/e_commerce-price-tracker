@@ -5,6 +5,7 @@ const usersSchema = new mongoose.Schema({
     email: { type: String, required: true, unique: true },
     Username:{type:String, required:true},
     password: { type: String, required: true },
+    product_id: [{ type: String }],
 });
 
 // Hash the password

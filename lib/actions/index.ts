@@ -7,6 +7,7 @@ import { scrapeAmazonProduct } from "../scraper";
 import { getAveragePrice, getHighestPrice, getLowestPrice } from "../utils";
 import { User } from "@/types";
 import { generateEmailBody, sendEmail } from "../nodemailer";
+import Users from "../models/users.model";
 
 export async function scrapeAndStoreProduct(productUrl: string, email: string) {
   if(!productUrl) return;
@@ -44,7 +45,16 @@ export async function scrapeAndStoreProduct(productUrl: string, email: string) {
       ...product },
       { upsert: true, new: true }
     );
-    // const find_user=await Product.findOne({user_email: email});
+
+    if(newProduct){
+      const store_id= await Users.findOneAndUpdate(
+        { email },
+        { $addToSet: { product_id: newProduct._id.toString()} },
+        { new: true, upsert: true }
+      );
+      console.log(newProduct._id);
+    }
+
     revalidatePath(`/products/${newProduct._id}`);
     //revalidatePath(`/products/${newProduct._id}?email=${email}`);
     
@@ -68,15 +78,31 @@ export async function getProductById(productId: string) {
 }
 
 
-export async function getAllProducts() {
-  try {
+// export async function getAllProducts() {
+//   try {
+//     connectToDB();
+
+//     const products = await Product.find();
+
+//     return products;
+//   } catch (error) {
+//     console.log(error);
+//   }
+// }
+
+export async function getAllProducts(user_email: string){
+  try{
     connectToDB();
 
-    const products = await Product.find();
-
-    return products;
-  } catch (error) {
-    console.log(error);
+    const user_products=await Users.findOne({email: user_email});
+    // const products=user_products.product_id;
+    console.log(user_products.product_id);
+    if(user_products)
+      return user_products.product_id;    
+    else 
+      return null;
+  }catch (error) {
+        console.log(error);
   }
 }
 
