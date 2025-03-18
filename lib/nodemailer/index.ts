@@ -154,23 +154,41 @@ export async function generateEmailBody(
 
 const transporter = nodemailer.createTransport({
   service: 'gmail',
+  port: 587,
+  secure: false,
   auth: {
     user: 'buywiz11@gmail.com',
     pass: process.env.GMAIL_APP_PASSWORD,
   },
 });
 
+// export const sendEmail = async (emailContent: EmailContent, sendTo: string[]) => {
+//   const mailOptions = {
+//     from: 'buywiz11@gmail.com',
+//     to: sendTo,
+//     html: emailContent.body,
+//     subject: emailContent.subject,
+//   };
+
+//   transporter.sendMail(mailOptions, (error: any, info: any) => {
+//     if (error) return console.log(error);
+
+//     console.log('Email sent: ', info);
+//   });
+// };
+
 export const sendEmail = async (emailContent: EmailContent, sendTo: string[]) => {
   const mailOptions = {
     from: 'buywiz11@gmail.com',
     to: sendTo,
-    html: emailContent.body,
     subject: emailContent.subject,
+    html: emailContent.body,
   };
 
-  transporter.sendMail(mailOptions, (error: any, info: any) => {
-    if (error) return console.log(error);
-
-    console.log('Email sent: ', info);
-  });
+  try {
+    const info = await transporter.sendMail(mailOptions);
+    console.log('✅ Email sent: ', info.response);
+  } catch (error) {
+    console.error('❌ Email sending failed:', error);
+  }
 };
