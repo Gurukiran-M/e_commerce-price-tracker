@@ -1,12 +1,15 @@
 import Modal from "@/components/Modal";
 import PriceInfoCard from "@/components/PriceInfoCard";
 import ProductCard from "@/components/ProductCard";
-import { getProductById, getSimilarProducts } from "@/lib/actions";
+import { getAllProducts, getProductById, getSimilarProducts } from "@/lib/actions";
+import { connectToDB } from "@/lib/mongoose";
 import { formatNumber } from "@/lib/utils";
-import { Product } from "@/types";
+import { Products } from "@/types";
+import { cookies } from "next/headers";
 import Image from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import Product from "@/lib/models/product.model"
 
 // type Props = {
 //   params: { id: string };
@@ -21,12 +24,27 @@ const ProductDetails = async ({ params }: Props) => {
   const { id } = await params;
 
   // Fetch product by id
-  const product: Product = await getProductById(id);
+  const product: Products = await getProductById(id);
 
   if (!product) redirect('/'); // Redirect if product is not found
 
   // Fetch similar products
-  const similarProducts = await getSimilarProducts(id);
+  // const similarProducts = await getSimilarProducts(id);
+  const cookieStore = await cookies();
+  const userEmail = cookieStore.get("user_email")?.value;
+  console.log(userEmail);
+  let similarProducts = [];
+  if (userEmail) {
+    const ProductIds = await getAllProducts(userEmail);
+    // console.log(ProductIds);
+    if (ProductIds.length > 0) {
+      connectToDB();
+      similarProducts = await Product.find({ _id: { $in: ProductIds } });
+      // console.log("Fetched Products:", allProducts);
+    }
+  }
+  else
+    console.log("userEmail not found");
 
   return (
     <div className="product-container">
@@ -193,9 +211,11 @@ const ProductDetails = async ({ params }: Props) => {
           <p className="section-text">Recent Search</p>
 
           <div className="flex flex-wrap gap-10 mt-7 w-full">
-            {similarProducts.map((product) => (
-              <ProductCard key={product._id} product={product} />
-            ))}
+            {similarProducts
+              .filter((product) =>  String(product._id) !== String(id))
+              .map((product) => (
+                <ProductCard key={product._id} product={product} />
+              ))}
           </div>
         </div>
       )}

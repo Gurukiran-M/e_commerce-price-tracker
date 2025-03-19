@@ -3,6 +3,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import UserProfile from './UserProfile'
 import { useEffect, useState } from 'react'
+import { usePathname } from "next/navigation";
 
 const navIcons = [
   { src: '/assets/icons/search.svg', alt: 'search' },
@@ -12,6 +13,7 @@ const navIcons = [
 
 const Navbar = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const pathname = usePathname();
 
   useEffect(() => {
     // Check login state from localStorage
@@ -58,7 +60,7 @@ const Navbar = () => {
               className="object-contain"
             />
           ))}
-           {isLoggedIn && <UserProfile />}
+           {isLoggedIn && !pathname.startsWith("/products/") && <UserProfile />}
         </div>
       </nav>
     </header>

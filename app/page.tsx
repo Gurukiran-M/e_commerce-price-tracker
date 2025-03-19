@@ -9,6 +9,7 @@ import { connectToDB } from "@/lib/mongoose"
 import Product from "@/lib/models/product.model"
 import SearchSection from "@/components/SearchSection"
 
+
 const Home = async () => {
   const cookieStore = await cookies();
   const userEmail = cookieStore.get("user_email")?.value;

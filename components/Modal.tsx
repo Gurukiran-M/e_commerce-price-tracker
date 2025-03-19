@@ -1,6 +1,6 @@
 "use client"
 
-import { FormEvent, Fragment, useState } from 'react'
+import { FormEvent, Fragment, useEffect, useState } from 'react'
 import { Dialog, Transition } from '@headlessui/react'
 import Image from 'next/image'
 import { addUserEmailToProduct } from '@/lib/actions'
@@ -14,14 +14,18 @@ const Modal = ({ productId }: Props) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [email, setEmail] = useState('');
 
+  useEffect(() => {
+    const storedEmail = localStorage.getItem("email");
+    if (storedEmail) setEmail(storedEmail)
+  }, []);
+
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsSubmitting(true);
-    console.log(email);
     await addUserEmailToProduct(productId, email);
 
     setIsSubmitting(false)
-    setEmail('')
+    // setEmail('')
     closeModal()
   }
 
@@ -47,14 +51,14 @@ const Modal = ({ productId }: Props) => {
               leaveFrom="opacity-100"
               leaveTo="opacity-0"
             >
-              <Dialog.Overlay className="fixed inset-0" /> 
+              <Dialog.Overlay className="fixed inset-0" />
             </Transition.Child>
 
             <span
               className="inline-block h-screen align-middle"
               aria-hidden="true"
             />
-            
+
             <Transition.Child
               as={Fragment}
               enter="ease-out duration-300"
@@ -68,7 +72,7 @@ const Modal = ({ productId }: Props) => {
                 <div className="flex flex-col">
                   <div className="flex justify-between">
                     <div className="p-3 border border-gray-200 rounded-10">
-                      <Image 
+                      <Image
                         src="/assets/icons/logo.svg"
                         alt="logo"
                         width={28}
@@ -76,7 +80,7 @@ const Modal = ({ productId }: Props) => {
                       />
                     </div>
 
-                    <Image 
+                    <Image
                       src="/assets/icons/x-close.svg"
                       alt="close"
                       width={24}
@@ -93,10 +97,13 @@ const Modal = ({ productId }: Props) => {
                   <p className="text-sm text-gray-600 mt-2">
                     Never miss a bargain again with our timely alerts!
                   </p>
+                  <p className="text-sm text-gray-600 mt-2">
+                    Get updates on <span className="text-blue-500">{email}!</span>
+                  </p>
                 </div>
 
                 <form className="flex flex-col mt-5" onSubmit={handleSubmit}>
-                  <label htmlFor="email" className="text-sm font-medium text-gray-700">
+                  {/* <label htmlFor="email" className="text-sm font-medium text-gray-700">
                     Email address
                   </label>
                   <div className="dialog-input_container">
@@ -116,7 +123,7 @@ const Modal = ({ productId }: Props) => {
                       placeholder="Enter your email address"
                       className='dialog-input'
                     />
-                  </div>
+                  </div> */}
 
                   <button type="submit"
                     className="dialog-btn"

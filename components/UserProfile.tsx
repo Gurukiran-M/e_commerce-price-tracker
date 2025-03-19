@@ -20,6 +20,11 @@ const UserProfile = () => {
     document.cookie = "user_email=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
     setUsername(null); // Reset state
     setIsDropdownOpen(false); // Close dropdown
+    // if (window.location.pathname.startsWith("/products/")) {
+    //   window.location.href = "/";
+    // } else {
+    //   console.log("Current Path:", window.location.pathname);
+    // }
     window.location.reload(); // Reload to reflect changes
   };
 

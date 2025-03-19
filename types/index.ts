@@ -6,7 +6,7 @@ export type User = {
   email: string;
 };
 
-export type Product = {
+export type Products = {
   _id?: string;
   url: string;
   currency: string;

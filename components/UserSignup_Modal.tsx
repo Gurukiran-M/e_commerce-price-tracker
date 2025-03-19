@@ -8,6 +8,11 @@ import { Login } from '@/lib/actions/login'
 import { Signup } from '@/lib/actions/signup'
 import { revalidate } from "@/app/api/cron/route";
 
+const validateEmail = (email: string) => {
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    return emailRegex.test(email);
+  };
+
 const User_Modal = () => {
     let [isOpen, setIsOpen] = useState(true)
     //   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -53,6 +58,10 @@ const User_Modal = () => {
         e.preventDefault();
         let response;
         document.cookie = `user_email=${email}; path=/`;
+        if (!validateEmail(email)) {
+            alert("Invalid email adress!");
+            return;
+          }
         if (isLogin) {
             response = await Login(email, password);
         } else {
@@ -220,3 +229,4 @@ const User_Modal = () => {
 }
 
 export default User_Modal
+
