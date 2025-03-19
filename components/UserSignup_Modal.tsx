@@ -23,7 +23,7 @@ const User_Modal = () => {
     const [message, setMessage] = useState("");
     const [showPassword, setShowPassword] = useState(false);
     const [isLocalStorageAvailable, setIsLocalStorageAvailable] = useState(false);
-    
+
     useEffect(() => {
         if (typeof window !== "undefined") {
             const username = localStorage.getItem("username");
