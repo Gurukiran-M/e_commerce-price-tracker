@@ -1,4 +1,4 @@
-import { PriceHistoryItem, Products } from "@/types";
+import { PriceHistoryItem, ProductDescription, Products } from "@/types";
 
 const Notification = {
   WELCOME: 'WELCOME',
@@ -14,14 +14,14 @@ export function extractPrice(...elements: any) {
   for (const element of elements) {
     const priceText = element.text().trim();
 
-    if(priceText) {
+    if (priceText) {
       const cleanPrice = priceText.replace(/[^\d.]/g, '');
 
-      let firstPrice; 
+      let firstPrice;
 
       if (cleanPrice) {
         firstPrice = cleanPrice.match(/\d+\.\d{2}/)?.[0];
-      } 
+      }
 
       return firstPrice || cleanPrice;
     }
@@ -38,26 +38,23 @@ export function extractCurrency(element: any) {
 
 // Extracts description from two possible elements from amazon
 export function extractDescription($: any) {
-  // these are possible elements holding description of the product
-  const selectors = [
-    ".a-unordered-list .a-list-item",
-    ".a-expander-content p",
-    // Add more selectors here if needed
-  ];
-
-  for (const selector of selectors) {
-    const elements = $(selector);
-    if (elements.length > 0) {
-      const textContent = elements
-        .map((_: any, element: any) => $(element).text().trim())
-        .get()
-        .join("\n");
-      return textContent;
+  try {
+    let keyFeatures = 'div#feature-bullets ul.a-unordered-list li span'
+    let table = 'div#prodDetails table#productDetails_techSpec_section_1:nth-child(1)'
+    let obj = {
+      keys: $(`${table} th`).map((_: any, e: any) => $(e).text().trim()).get(),
+      values: $(`${table} td`).map((_: any, e: any) => $(e).text().trim()).get()
     }
-  }
+    const description: ProductDescription = { features: [], specifications: {} }
+    for (let i = 0; i < obj.keys.length; i++)
+      description.specifications[obj.keys[i]] = obj.values[i];
+    description.features = $(`${keyFeatures}`).map((_: any, e: any) => $(e).text().trim()).get()
 
-  // If no matching elements were found, return an empty string
-  return "";
+    return JSON.stringify(description);
+  } catch (error) {
+    console.log(`Error while parsing description: ${error}`);
+    return "";
+  }
 }
 
 export function getHighestPrice(priceList: PriceHistoryItem[]) {

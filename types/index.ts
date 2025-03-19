@@ -27,6 +27,11 @@ export type Products = {
   users?: User[];
 };
 
+export type ProductDescription = {
+  specifications: any,
+  features: Array<any>
+}
+
 export type SearchResult = {
   productName: string,
   currentPrice: number,

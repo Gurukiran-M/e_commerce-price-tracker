@@ -47,19 +47,19 @@ export async function scrapeAndStoreProduct(productUrl: string, email: string) {
       { upsert: true, new: true }
     );
 
-    if(newProduct){
-      const store_id= await Users.findOneAndUpdate(
+    if (newProduct) {
+      const store_id = await Users.findOneAndUpdate(
         { email },
-        { $addToSet: { product_id: newProduct._id.toString()} },
+        { $addToSet: { product_id: newProduct._id.toString() } },
         { new: true, upsert: true }
       );
-      console.log(newProduct._id);
+      console.log(`Scraped product: ${newProduct._id}`);
     }
 
     revalidatePath(`/products/${newProduct._id}`);
     //revalidatePath(`/products/${newProduct._id}?email=${email}`);
 
-    return { "id": newProduct._id }    // Return product id
+    return JSON.parse(JSON.stringify({ "id": newProduct._id })) // Return product id
   } catch (error: any) {
     throw new Error(`Failed to create/update product: ${error.message}`)
   }
@@ -92,19 +92,19 @@ export async function getProductById(productId: string) {
 //   }
 // }
 
-export async function getAllProducts(user_email: string){
-  try{
+export async function getAllProducts(user_email: string) {
+  try {
     connectToDB();
 
-    const user_products=await Users.findOne({email: user_email});
+    const user_products = await Users.findOne({ email: user_email });
     // const products=user_products.product_id;
     console.log(user_products.product_id);
-    if(user_products)
-      return user_products.product_id;    
-    else 
+    if (user_products)
+      return user_products.product_id;
+    else
       return null;
-  }catch (error) {
-        console.log(error);
+  } catch (error) {
+    console.log(error);
   }
 }
 
