@@ -105,6 +105,7 @@ export async function generateEmailBody(
               <h2>Lowest Price Alert for ${shortenedTitle} 🚨</h2>
               <h4>${product.title} is now at its lowest price ever! 🤑</h4>
               <p>Don't wait! Grab it now before the price goes up again. <a href="${product.url}" target="_blank" rel="noopener noreferrer">Buy it here</a>.</p>
+              <img class="product-image" src="${product.image}" alt="Product Image"/>
               <div class="footer">
                 <p>You're receiving this email because you're tracking ${product.title} through BuyWiz.</p>
                 <p><a href="${product.url}">Unsubscribe</a> if you'd prefer not to receive updates.</p>
@@ -186,6 +187,7 @@ export const sendEmail = async (emailContent: EmailContent, sendTo: string[]) =>
 
   try {
     const info = await transporter.sendMail(mailOptions);
+    console.log('Email sent: ', info);
     console.log('✅ Email sent: ', info.response);
   } catch (error) {
     console.error('❌ Email sending failed:', error);

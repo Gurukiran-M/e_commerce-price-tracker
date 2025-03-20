@@ -92,9 +92,10 @@ export const getEmailNotifType = (
   scrapedProduct: Products,
   currentProduct: Products
 ) => {
-  const lowestPrice = getLowestPrice(currentProduct.priceHistory);
+  // const lowestPrice = getLowestPrice(currentProduct.priceHistory);
 
-  if (scrapedProduct.currentPrice < lowestPrice) {
+  // if (scrapedProduct.currentPrice < lowestPrice) {
+  if (scrapedProduct.currentPrice < currentProduct.currentPrice) {
     return Notification.LOWEST_PRICE as keyof typeof Notification;
   }
   if (!scrapedProduct.isOutOfStock && currentProduct.isOutOfStock) {
