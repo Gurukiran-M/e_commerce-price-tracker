@@ -27,7 +27,7 @@ export async function scrapeChromaProduct(url: string) {
     }
 
     const browser = await puppeteer.launch({
-        headless: false,
+        headless: true,
         slowMo: 50,
     });
 
