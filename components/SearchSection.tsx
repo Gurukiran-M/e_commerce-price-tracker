@@ -9,8 +9,8 @@ const SearchSection = () => {
     const [productName, setProductName] = useState("");
     const [filters, setFilters] = useState("");
     const [isLoading, setIsLoading] = useState(false);
-    const [searchResults, setSearchResults] = useState(Array<SearchResult>)
-    const [amazonResults, setAmazonResults] = useState(Array<SearchResult>)
+    const [unknownSites, setUnknownSites] = useState(Array<SearchResult>)
+    const [knownSites, setKnownSites] = useState(Array<SearchResult>)
 
     const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
         event.preventDefault();
@@ -19,23 +19,10 @@ const SearchSection = () => {
 
             // Fetch product search results
             const results = await getSearchResults(productName, filters);
-            if (!results) { console.log("Couldn't find products"); return; }
+            if (!results) { console.error("Couldn't find products"); return; }
             else console.log(results);
-            const searchResults: SearchResult[] = []
-
-            results.forEach(result => {
-                searchResults.push({
-                    productName: result.title,
-                    currentPrice: result.extracted_price,
-                    currency: result.price.charAt(0),
-                    productLink: result.link,
-                    thumbnail: result.thumbnail,
-                    site: result.source
-                })
-            });
-            console.log(searchResults);
-            setAmazonResults(searchResults.filter((e: any) => e.productLink.search("amazon.in") != -1) as Array<any>);
-            setSearchResults((searchResults.filter((e: any) => e.productLink.search("amazon.in") == -1) as Array<any>).slice(0, 8));
+            setUnknownSites((results.unknownSites as Array<any>).slice(0, 8));
+            setKnownSites(results.knownSites as Array<any>);
         } catch (error) {
             console.log(error);
         } finally {
@@ -56,20 +43,20 @@ const SearchSection = () => {
             </form>
 
             {(
-                amazonResults.length == 0 ? <></> : <>
+                knownSites.length == 0 ? <></> : <>
                     <h2 className="section-text">Search results</h2>
 
                     <div className="flex flex-wrap gap-x-8 gap-y-16">
-                        {amazonResults?.map(result => <SearchResultCard key={result.productName} result={result} />)}
+                        {knownSites?.map(result => <SearchResultCard key={result.productName} result={result} />)}
                     </div>
                 </>
             )}
 
             {(
-                searchResults.length == 0 ? <></> : <>
+                unknownSites.length == 0 ? <></> : <>
                     <h2 className="section-text">Similar results</h2>
                     <div className="flex flex-wrap gap-x-8 gap-y-16">
-                        {searchResults?.map(result => <SearchResultCard key={result.productName} result={result} />)}
+                        {unknownSites?.map(result => <SearchResultCard key={result.productName} result={result} />)}
                     </div>
                 </>
             )}

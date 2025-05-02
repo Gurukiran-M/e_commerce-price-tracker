@@ -3,7 +3,7 @@
 import { SearchResult } from '@/types';
 import Image from 'next/image';
 import Link from 'next/link';
-import React, { MouseEventHandler, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { formatNumber } from "@/lib/utils";
 import { scrapeAndStoreProduct } from '@/lib/actions';
 
@@ -11,12 +11,12 @@ interface Props {
   result: SearchResult;
 }
 
-const isValidAmazonProductURL = (url: string) => {
+const isKnownSite = (url: string) => {
   try {
     const parsedURL = new URL(url);
     const hostname = parsedURL.hostname;
-
-    return hostname.includes('amazon.com') || hostname.includes('amazon.') || hostname.endsWith('amazon')
+    console.log(hostname);
+    return hostname.includes('amazon.') || hostname.includes('flipkart.') || hostname.includes('croma.') || hostname.includes('reliancedigital.in')
   } catch (error) {
     return false;
   }
@@ -32,7 +32,7 @@ const SearchResultCard = ({ result }: Props) => {
 
   const handleRedirect = async (e: any) => {
     e.preventDefault();
-    if (isValidAmazonProductURL(result.productLink)) {
+    if (isKnownSite(result.productLink)) {
       const productId = await scrapeAndStoreProduct(result.productLink, email);
       open(`products/${productId?.id}`, '_blank')
     }
