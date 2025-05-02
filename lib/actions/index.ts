@@ -8,6 +8,7 @@ import { getAveragePrice, getHighestPrice, getLowestPrice } from "../utils";
 import { User } from "@/types";
 import { generateEmailBody, sendEmail } from "../nodemailer";
 import Users from "../models/users.model";
+import { scrapeChromaProduct } from "../scraper/chorma_scraper";
 
 export async function scrapeAndStoreProduct(productUrl: string, email: string) {
   if (!productUrl) return;
@@ -15,7 +16,14 @@ export async function scrapeAndStoreProduct(productUrl: string, email: string) {
   try {
     connectToDB();
 
-    const scrapedProduct = await scrapeAmazonProduct(productUrl);
+    // const scrapedProduct = await scrapeAmazonProduct(productUrl);
+    let scrapedProduct;
+    if (productUrl.includes('amazon.com') || productUrl.includes('amazon.') || productUrl.endsWith('amazon'))
+      scrapedProduct = await scrapeAmazonProduct(productUrl);
+    else if (productUrl.includes('croma.com') || productUrl.includes('croma.') || productUrl.endsWith('croma'))
+      scrapedProduct = await scrapeChromaProduct(productUrl);
+
+    // console.log(scrapedProduct)
 
     if (!scrapedProduct) return;
 

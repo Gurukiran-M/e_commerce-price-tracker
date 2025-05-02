@@ -19,6 +19,7 @@
     "next": "latest",
     "node-fetch": "^3.3.2",
     "nodemailer": "^6.9.5",
+    "puppeteer": "^24.8.0",
     "react": "latest",
     "react-dom": "latest",
     "react-responsive-carousel": "^3.2.23",
