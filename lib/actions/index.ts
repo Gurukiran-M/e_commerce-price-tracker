@@ -3,12 +3,10 @@
 import { revalidatePath } from "next/cache";
 import Product from "../models/product.model";
 import { connectToDB } from "../mongoose";
-import { scrapeAmazonProduct } from "../scraper";
+import { scrapeProduct } from "../scraper";
 import { getAveragePrice, getHighestPrice, getLowestPrice } from "../utils";
-import { User } from "@/types";
 import { generateEmailBody, sendEmail } from "../nodemailer";
 import Users from "../models/users.model";
-import { scrapeChromaProduct } from "../scraper/chorma_scraper";
 
 export async function scrapeAndStoreProduct(productUrl: string, email: string) {
   if (!productUrl) return;
@@ -16,14 +14,7 @@ export async function scrapeAndStoreProduct(productUrl: string, email: string) {
   try {
     connectToDB();
 
-    // const scrapedProduct = await scrapeAmazonProduct(productUrl);
-    let scrapedProduct;
-    if (productUrl.includes('amazon.com') || productUrl.includes('amazon.') || productUrl.endsWith('amazon'))
-      scrapedProduct = await scrapeAmazonProduct(productUrl);
-    else if (productUrl.includes('croma.com') || productUrl.includes('croma.') || productUrl.endsWith('croma'))
-      scrapedProduct = await scrapeChromaProduct(productUrl);
-
-    // console.log(scrapedProduct)
+    const scrapedProduct = await scrapeProduct(productUrl);
 
     if (!scrapedProduct) return;
 

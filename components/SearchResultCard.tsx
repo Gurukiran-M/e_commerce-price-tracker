@@ -34,7 +34,7 @@ const SearchResultCard = ({ result }: Props) => {
     e.preventDefault();
     if (isKnownSite(result.productLink)) {
       const productId = await scrapeAndStoreProduct(result.productLink, email);
-      open(`products/${productId?.id}`, '_blank')
+      if (productId) open(`products/${productId?.id}`, '_blank')
     }
     else open(result.productLink, '_blank')
   }

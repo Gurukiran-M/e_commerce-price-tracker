@@ -29,8 +29,14 @@ const ProductCard = ({ product }: Props) => {
           </p>
 
           <p className="text-black text-lg font-semibold">
-            <span>{product?.currency}</span>
-            <span>{product?.currentPrice}</span>
+            {product?.isOutOfStock ?
+              <span> Unavailable </span>
+              :
+              <>
+                <span>{product?.currency}</span>
+                <span>{product?.currentPrice}</span>
+              </>
+            }
           </p>
         </div>
       </div>

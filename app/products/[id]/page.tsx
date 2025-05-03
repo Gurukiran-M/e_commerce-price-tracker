@@ -142,9 +142,16 @@ const ProductDetails = async ({ params }: Props) => {
 
           <div className="product-info">
             <div className="flex flex-col gap-2">
-              <p className="text-[34px] text-secondary font-bold">
-                {product.currency} {formatNumber(product.currentPrice)}
-              </p>
+              {
+                product.isOutOfStock ?
+                  <p className="text-[34px] text-secondary font-bold">
+                    Currently Unavailable
+                  </p>
+                  :
+                  <p className="text-[34px] text-secondary font-bold">
+                    {product.currency} {formatNumber(product.currentPrice)}
+                  </p>
+              }
               <p className="text-[21px] text-black opacity-50 line-through">
                 {product.currency} {formatNumber(product.originalPrice)}
               </p>

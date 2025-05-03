@@ -4,27 +4,14 @@ import { scrapeAndStoreProduct } from '@/lib/actions';
 import { FormEvent, useEffect, useState } from 'react'
 import getCookie from '../lib/actions/getCookie';
 
-const isValidAmazonProductURL = (url: string) => {
+const isValidProductURL = (url: string) => {
   try {
-    const parsedURL = new URL(url);
-    const hostname = parsedURL.hostname;
-
-    if (
-      hostname.includes('amazon.com') ||
-      hostname.includes('amazon.') ||
-      hostname.endsWith('amazon')  || hostname.includes('croma.com') ||
-      hostname.includes('croma.') ||
-      hostname.endsWith('croma')
-    ) {
-      return true;
-    }
+    const hostname = new URL(url).hostname;
+    return hostname.includes('amazon.') || hostname.includes('croma.') || hostname.includes('flipkart.') || hostname.includes('reliancedigital.')
   } catch (error) {
     return false;
   }
-
-  return false;
 }
-
 
 const Searchbar = () => {
   const [searchPrompt, setSearchPrompt] = useState('');
@@ -40,16 +27,25 @@ const Searchbar = () => {
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    const isValidLink = isValidAmazonProductURL(searchPrompt);
+    const isValidLink = isValidProductURL(searchPrompt);
 
-    if (!isValidLink) return alert('Please provide a valid Amazon link')
+    if (!isValidLink) return alert('Please provide a valid link')
 
     try {
-      setIsLoading(true);   
+      setIsLoading(true);
       const userEmail = getCookie("user_email");
-      console.log(userEmail);
-      const product = await scrapeAndStoreProduct(searchPrompt,userEmail);
-      if (product) open(`products/${product?.id}`, '_blank')          // Open product page after scraping
+      // console.log(userEmail);
+
+      const product = await scrapeAndStoreProduct(searchPrompt, userEmail);
+      if (product) open(`products/${product?.id}`, '_blank') // Open product page after scraping
+
+      // const product = await scrapeProduct(searchPrompt);
+      // if (product) {
+      //   product.description = JSON.parse(product.description)
+      //   console.log('Product scraped successfully!');
+      //   console.log(JSON.stringify(product, null, 2));
+      // } else console.error('Product not scraped');
+
     } catch (error) {
       console.log(error);
     } finally {
