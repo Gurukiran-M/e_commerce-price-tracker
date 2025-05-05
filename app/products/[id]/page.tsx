@@ -10,6 +10,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import Product from "@/lib/models/product.model"
+import ProductDescriptionComponent from "@/components/ProductDescription";
 
 type Props = {
   params: Promise<{ id: string }>;
@@ -142,16 +143,9 @@ const ProductDetails = async ({ params }: Props) => {
 
           <div className="product-info">
             <div className="flex flex-col gap-2">
-              {
-                product.isOutOfStock ?
-                  <p className="text-[34px] text-secondary font-bold">
-                    Currently Unavailable
-                  </p>
-                  :
-                  <p className="text-[34px] text-secondary font-bold">
-                    {product.currency} {formatNumber(product.currentPrice)}
-                  </p>
-              }
+              <p className="text-[34px] text-secondary font-bold">
+                {product.currency} {formatNumber(product.currentPrice)}
+              </p>
               <p className="text-[21px] text-black opacity-50 line-through">
                 {product.currency} {formatNumber(product.originalPrice)}
               </p>
@@ -221,15 +215,8 @@ const ProductDetails = async ({ params }: Props) => {
       </div>
 
       <div className="flex flex-col gap-16">
-        <div className="flex flex-col gap-5">
-          <h3 className="text-2xl text-secondary font-semibold">
-            Product Description
-          </h3>
 
-          <div className="flex flex-col gap-4">
-            {buildDescription(product?.description)}
-          </div>
-        </div>
+        <ProductDescriptionComponent str={product?.description} />
 
         <Link href={`${product.url}`} target="_blank" className="text-base text-white">
           <button className="btn w-fit mx-auto flex items-center justify-center gap-3 min-w-[200px]">

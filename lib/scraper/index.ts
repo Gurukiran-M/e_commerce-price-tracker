@@ -111,6 +111,8 @@ async function getAmazonData(url: string) {
       averagePrice: Number(currentPrice) || Number(originalPrice),
     }
 
+    if (data.currency.toUpperCase() == "INR") data.currency = '₹'
+
     return data;
   } catch (error: any) {
     console.log(error);
@@ -231,6 +233,8 @@ async function getFlipkartData(url: string) {
       averagePrice: Number(currentPrice) || Number(originalPrice),
     }
 
+    if (data.currency.toUpperCase() == "INR") data.currency = '₹'
+
     // console.log(data);
 
     await browser.close();
@@ -346,7 +350,9 @@ async function getRelianceDigitalData(url: string) {
       averagePrice: currentPrice,
     };
 
-    console.log(data);
+    if (data.currency.toUpperCase() == "INR") data.currency = '₹'
+
+    // console.log(data);
 
     return data;
   } catch (err: any) {
@@ -362,7 +368,7 @@ async function getRelianceDigitalData(url: string) {
  * Scrape product data from Croma
  */
 async function getCromaData(url: string) {
-  if (!url) return;
+  if (!url) return null;
 
   const browser = await puppeteer.launch({
     headless: true,
@@ -537,10 +543,10 @@ async function getCromaData(url: string) {
       highestPrice: Number(op) || Number(cp),
       averagePrice: Number(cp) || Number(op),
     }
-      return data;
+    return data;
   } catch (error) {
     console.error('Error scraping:', error);
     await browser.close();
   }
-
+  return null
 }
