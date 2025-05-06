@@ -390,163 +390,163 @@ async function getCromaData(url: string) {
   });
 
 
-  // try {
-  //     // await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 60000 });
-  //     await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 60000 });
-
-  //     // Wait for the title element to appear
-  //     await Promise.all([
-  //         page.waitForSelector('.pd-title',{ timeout: 60000 }),
-  //         // page.waitForSelector('#pdp-product-price'),
-  //         // page.waitForSelector('#old-price'),
-  //     ]);
-
-  //     // Extract the title text
-  //     const title = await page.$eval('.pd-title.pd-title-normal', el => (el.textContent ?? '').trim());
-  //     // console.log('Product Title:', title);
-
-  //     const currentPrice = await page.$eval('#pdp-product-price', el => (el.textContent ?? '').trim());
-  //     const cp = currentPrice.replace(/[^\d.]/g, '').split('.')[0];
-  //     // console.log(cp)
-
-
-  //     const oldPriceElement = await page.$('#old-price');
-  //     let op = null;
-  //     if (oldPriceElement) {
-  //         const originalPrice = await page.$eval('#old-price', el => (el.textContent ?? '').trim());
-  //         op = originalPrice.replace(/[^\d.]/g, '').split('.')[0];
-  //     }
-
-  //     // const features= await page.$eval('.cp-keyfeature.pd-eligibility-wrap', el => (el.textContent ?? '').trim());
-
-  //     const features = await page.$$eval(
-  //         '.cp-keyfeature.pd-eligibility-wrap li',
-  //         elements => elements.map(el => (el.textContent ?? '').trim())
-  //     );
-
-  //     const specifications = await page.$$eval(
-  //         '.cp-specification-info',
-  //         uls => {
-  //             const specs: { [key: string]: string } = {};
-  //             uls.forEach(ul => {
-  //                 const keyEl = ul.querySelector('.cp-specification-spec-info:nth-child(1)');
-  //                 const valueEl = ul.querySelector('.cp-specification-spec-info:nth-child(2)');
-  //                 if (keyEl && valueEl) {
-  //                     const key = (keyEl.textContent ?? '').trim();
-  //                     const value = (valueEl.textContent ?? '').trim();
-  //                     specs[key] = value;
-  //                 }
-  //             });
-  //             return specs;
-  //         }
-  //     );
-
-  //     const description: ProductDescription = {
-  //         features,
-  //         specifications
-  //     };
-
-
-  //     const discountElement = await page.$('.dicount-value');
-  //     let discount = null;
-  //     if (discountElement) {
-  //         const discountRate = await page.$eval('.dicount-value', el => (el.textContent ?? '').trim());
-  //         const match = discountRate.match(/(\d+(\.\d+)?)/);
-  //         discount = match ? match[1] : null;
-  //     }
-
-  //     const imageUrl = await page.$eval(
-  //         '[id="0prod_img"]',
-  //         el => el.getAttribute('data-src')
-  //     );
-
-  //     console.log(imageUrl);
-
-
-  //     await browser.close();
-
-  //     const data = {
-  //         url,
-  //         currency: '₹',
-  //         image: imageUrl,
-  //         title,
-  //         currentPrice: Number(cp) || Number(op),
-  //         originalPrice: Number(op) || Number(cp),
-  //         priceHistory: [],
-  //         discountRate: discount,
-  //         category: 'category',
-  //         reviewsCount: 100,
-  //         stars: 4.5,
-  //         isOutOfStock: false,
-  //         description: JSON.stringify(description),
-  //         lowestPrice: Number(cp) || Number(op),
-  //         highestPrice: Number(op) || Number(cp),
-  //         averagePrice: Number(cp) || Number(op),
-  //     }
-
-  //     return data;
-  // } catch (error) {
-  //     console.error('Error scraping:', error);
-  //     await browser.close();
-  // }
   try {
-    await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 60000 });
+      // await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 60000 });
+      await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 60000 });
 
-    const html = await page.content();
-    const $ = cheerio.load(html);
+      // Wait for the title element to appear
+      await Promise.all([
+          page.waitForSelector('.pd-title',{ timeout: 60000 }),
+          // page.waitForSelector('#pdp-product-price'),
+          // page.waitForSelector('#old-price'),
+      ]);
 
-    const title = $('.pd-title.pd-title-normal').text().trim();
-    const currentPrice = $('#pdp-product-price').text().trim();
-    const cp = currentPrice.replace(/[^\d.]/g, '').split('.')[0];
+      // Extract the title text
+      const title = await page.$eval('.pd-title.pd-title-normal', el => (el.textContent ?? '').trim());
+      // console.log('Product Title:', title);
 
-    const opEl = $('#old-price').text().trim();
-    const op = opEl ? opEl.replace(/[^\d.]/g, '').split('.')[0] : null;
-
-    const features: string[] = [];
-    $('.cp-keyfeature.pd-eligibility-wrap li').each((_, el) => {
-      features.push($(el).text().trim());
-    });
-
-    const specifications: { [key: string]: string } = {};
-    $('.cp-specification-info').each((_, el) => {
-      const key = $(el).find('.cp-specification-spec-info').eq(0).text().trim();
-      const value = $(el).find('.cp-specification-spec-info').eq(1).text().trim();
-      if (key) specifications[key] = value;
-    });
+      const currentPrice = await page.$eval('#pdp-product-price', el => (el.textContent ?? '').trim());
+      const cp = currentPrice.replace(/[^\d.]/g, '').split('.')[0];
+      // console.log(cp)
 
 
-    const description: ProductDescription = {
-      features,
-      specifications
-    };
+      const oldPriceElement = await page.$('#old-price');
+      let op = null;
+      if (oldPriceElement) {
+          const originalPrice = await page.$eval('#old-price', el => (el.textContent ?? '').trim());
+          op = originalPrice.replace(/[^\d.]/g, '').split('.')[0];
+      }
 
-    const discountRate = $('.dicount-value').text().replace(/[-%]/g, "").trim() || '0';
-    const discount = parseFloat(discountRate) || 0;
+      // const features= await page.$eval('.cp-keyfeature.pd-eligibility-wrap', el => (el.textContent ?? '').trim());
 
-    const imageUrl = $('[id="0prod_img"]').attr('data-src') || '';
+      const features = await page.$$eval(
+          '.cp-keyfeature.pd-eligibility-wrap li',
+          elements => elements.map(el => (el.textContent ?? '').trim())
+      );
 
-    const data = {
-      url,
-      currency: '₹',
-      image: imageUrl,
-      title,
-      currentPrice: Number(cp) || Number(op),
-      originalPrice: Number(op) || Number(cp),
-      priceHistory: [],
-      discountRate: discount,
-      category: 'category',
-      reviewsCount: 100,
-      stars: 4.5,
-      isOutOfStock: false,
-      description: JSON.stringify(description),
-      lowestPrice: Number(cp) || Number(op),
-      highestPrice: Number(op) || Number(cp),
-      averagePrice: Number(cp) || Number(op),
-    }
-    return data;
+      const specifications = await page.$$eval(
+          '.cp-specification-info',
+          uls => {
+              const specs: { [key: string]: string } = {};
+              uls.forEach(ul => {
+                  const keyEl = ul.querySelector('.cp-specification-spec-info:nth-child(1)');
+                  const valueEl = ul.querySelector('.cp-specification-spec-info:nth-child(2)');
+                  if (keyEl && valueEl) {
+                      const key = (keyEl.textContent ?? '').trim();
+                      const value = (valueEl.textContent ?? '').trim();
+                      specs[key] = value;
+                  }
+              });
+              return specs;
+          }
+      );
+
+      const description: ProductDescription = {
+          features,
+          specifications
+      };
+
+
+      const discountElement = await page.$('.dicount-value');
+      let discount = null;
+      if (discountElement) {
+          const discountRate = await page.$eval('.dicount-value', el => (el.textContent ?? '').trim());
+          const match = discountRate.match(/(\d+(\.\d+)?)/);
+          discount = match ? match[1] : null;
+      }
+
+      const imageUrl = await page.$eval(
+          '[id="0prod_img"]',
+          el => el.getAttribute('data-src')
+      );
+
+      console.log(imageUrl);
+
+
+      await browser.close();
+
+      const data = {
+          url,
+          currency: '₹',
+          image: imageUrl,
+          title,
+          currentPrice: Number(cp) || Number(op),
+          originalPrice: Number(op) || Number(cp),
+          priceHistory: [],
+          discountRate: discount,
+          category: 'category',
+          reviewsCount: 100,
+          stars: 4.5,
+          isOutOfStock: false,
+          description: JSON.stringify(description),
+          lowestPrice: Number(cp) || Number(op),
+          highestPrice: Number(op) || Number(cp),
+          averagePrice: Number(cp) || Number(op),
+      }
+
+      return data;
   } catch (error) {
-    console.error('Error scraping:', error);
-    await browser.close();
+      console.error('Error scraping:', error);
+      await browser.close();
   }
+  // try {
+  //   await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 60000 });
+
+  //   const html = await page.content();
+  //   const $ = cheerio.load(html);
+
+  //   const title = $('.pd-title.pd-title-normal').text().trim();
+  //   const currentPrice = $('#pdp-product-price').text().trim();
+  //   const cp = currentPrice.replace(/[^\d.]/g, '').split('.')[0];
+
+  //   const opEl = $('#old-price').text().trim();
+  //   const op = opEl ? opEl.replace(/[^\d.]/g, '').split('.')[0] : null;
+
+  //   const features: string[] = [];
+  //   $('.cp-keyfeature.pd-eligibility-wrap li').each((_, el) => {
+  //     features.push($(el).text().trim());
+  //   });
+
+  //   const specifications: { [key: string]: string } = {};
+  //   $('.cp-specification-info').each((_, el) => {
+  //     const key = $(el).find('.cp-specification-spec-info').eq(0).text().trim();
+  //     const value = $(el).find('.cp-specification-spec-info').eq(1).text().trim();
+  //     if (key) specifications[key] = value;
+  //   });
+
+
+  //   const description: ProductDescription = {
+  //     features,
+  //     specifications
+  //   };
+
+  //   const discountRate = $('.dicount-value').text().replace(/[-%]/g, "").trim() || '0';
+  //   const discount = parseFloat(discountRate) || 0;
+
+  //   const imageUrl = $('[id="0prod_img"]').attr('data-src') || '';
+
+  //   const data = {
+  //     url,
+  //     currency: '₹',
+  //     image: imageUrl,
+  //     title,
+  //     currentPrice: Number(cp) || Number(op),
+  //     originalPrice: Number(op) || Number(cp),
+  //     priceHistory: [],
+  //     discountRate: discount,
+  //     category: 'category',
+  //     reviewsCount: 100,
+  //     stars: 4.5,
+  //     isOutOfStock: false,
+  //     description: JSON.stringify(description),
+  //     lowestPrice: Number(cp) || Number(op),
+  //     highestPrice: Number(op) || Number(cp),
+  //     averagePrice: Number(cp) || Number(op),
+  //   }
+  //   return data;
+  // } catch (error) {
+  //   console.error('Error scraping:', error);
+  //   await browser.close();
+  // }
   return null
 }
