@@ -12,6 +12,13 @@ const password = String(process.env.BRIGHT_DATA_PASSWORD);
 const port = 22225;
 const session_id = (1000000 * Math.random()) | 0;
 
+const puppeteer_config = {
+  headless: true,
+  slowMo: 50,
+  executablePath: "/usr/bin/chromium",
+  args: ["--no-sandbox", "--disable-setuid-sandbox"],
+};
+
 const options = {
   auth: {
     username: `${username}-session-${session_id}`,
@@ -149,12 +156,7 @@ async function getFlipkartData(url: string) {
 
   const imgResolution = "image/512/512",
     imgRE = /image\/\d+\/\d+/;
-  const browser = await puppeteer.launch({
-    headless: true,
-    slowMo: 50,
-    executablePath: "/usr/bin/chromium",
-    args: ["--no-sandbox", "--disable-setuid-sandbox"],
-  });
+  const browser = await puppeteer.launch(puppeteer_config);
   const page = await browser.newPage();
   try {
     await page.goto(url, { waitUntil: "domcontentloaded" });
@@ -307,11 +309,7 @@ async function getFlipkartData(url: string) {
 async function getRelianceDigitalData(url: string) {
   if (!url) return null;
 
-  const browser = await puppeteer.launch({
-    headless: true,
-    executablePath: "/usr/bin/chromium",
-    args: ["--no-sandbox", "--disable-setuid-sandbox"],
-  });
+  const browser = await puppeteer.launch(puppeteer_config);
 
   const page = await browser.newPage();
 
@@ -437,12 +435,7 @@ async function getRelianceDigitalData(url: string) {
 async function getCromaData(url: string) {
   if (!url) return null;
 
-  const browser = await puppeteer.launch({
-    headless: true,
-    executablePath: "/usr/bin/chromium",
-    // slowMo: 50,
-    args: ["--no-sandbox", "--disable-setuid-sandbox"],
-  });
+  const browser = await puppeteer.launch(puppeteer_config);
 
   const page = await browser.newPage();
 

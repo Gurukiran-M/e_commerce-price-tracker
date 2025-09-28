@@ -8,7 +8,7 @@ import { getAveragePrice, getHighestPrice, getLowestPrice } from "../utils";
 import { generateEmailBody, sendEmail } from "../nodemailer";
 import Users from "../models/users.model";
 
-export async function scrapeAndStoreProduct(productUrl: string, email: string) {
+export async function scrapeAndStoreProduct(productUrl: string|undefined, email: string) {
   if (!productUrl) return;
 
   try {

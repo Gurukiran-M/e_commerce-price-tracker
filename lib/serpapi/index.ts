@@ -1,8 +1,6 @@
 "use server";
 
 import { SearchResult } from "@/types";
-import axios from "axios";
-import * as cheerio from "cheerio";
 import { getJson } from "serpapi";
 
 /**
@@ -26,61 +24,74 @@ export async function getSearchResults(query: string, filters: string) {
     });
 
     const results: Array<any> = json.shopping_results;
-    const searchResults: SearchResult[] = [];
     const knownSites: SearchResult[] = [],
       unknownSites: SearchResult[] = [];
 
     for (const result of results) {
-      if (!result.link) {
-        // When direct link is not present
-        const response = await axios.get(result.product_link);
-        const $ = cheerio.load(response.data);
-        let allLinks = $("a");
-        let links: Array<string | undefined> = [];
-        allLinks.each((i, link) => {
-          if ($(link).text().search("Visit site") !== -1)
-            links.push(
-              $(link).attr("href")?.replace(/^.*q=/, "").replace(/&.*$/, "")
-            ); //Get href link and extract the url
-        });
-        if (links[0]) result["link"] = decodeURIComponent(links[0]);
-        console.log(result);
-        if (result.link) {
-          const uri = new URL(result.link);
-          result.source = uri.hostname
-            ?.replace("www.", "")
-            .replace(/\.\w*?$/, "");
-        }
-      }
-      const data = {
+      //   if (result.immersive_product_page_token) {
+      //     const data: SearchResult = {
+      //       productName: result.title,
+      //       currentPrice: result.extracted_price,
+      //       currency: result.price.charAt(0),
+      //       productLink: result.link || "#",
+      //       thumbnail: result.thumbnail,
+      //       site: result.source,
+      //       immersive_product_page_token: result.immersive_product_page_token,
+      //     };
+      //     knownSites.push(data);
+      //     continue;
+      //   }
+
+      const data: SearchResult = {
         productName: result.title,
         currentPrice: result.extracted_price,
         currency: result.price.charAt(0),
         productLink: result.link || "#",
         thumbnail: result.thumbnail,
         site: result.source,
+        immersive_product_page_token: result.immersive_product_page_token,
       };
 
-      if (
-        result.link?.match(
-          "amazon.in|flipkart.com|croma.com|reliancedigital.in"
-        )
-      )
-        knownSites.push(data);
+      if (isKnownSite(result.source)) knownSites.push(data);
       else unknownSites.push(data);
-
-      searchResults.push({
-        productName: result.title,
-        currentPrice: result.extracted_price,
-        currency: result.price.charAt(0),
-        productLink: result.link || "#",
-        thumbnail: result.thumbnail,
-        site: result.source,
-      });
     }
     return { knownSites, unknownSites };
-    // return json.shopping_results as Array<any>;
   } catch (error) {
-    console.log(`Error while fetching search results: ${error}`);
+    console.error(`Error while fetching search results: ${error}`);
   }
+}
+
+export async function extractFromImmersiveProduct(
+  immersive_product_page_token: string,
+  thumbnail: string
+) {
+  try {
+    const json = await getJson({
+      engine: "google_immersive_product",
+      page_token: immersive_product_page_token,
+      api_key: process.env.SERPAPI_KEY,
+    });
+    const stores =
+      json.product_results.stores.filter((e: any) => isKnownSite(e.link)) || [];
+    const results: SearchResult[] = [];
+    for (const store of stores) {
+      const result: SearchResult = {
+        productName: store.title || "",
+        currentPrice: store.extracted_price || 0,
+        currency: store.price.charAt(0) || "₹",
+        productLink: store.link || "#",
+        thumbnail: thumbnail,
+        site: store.name,
+        immersive_product_page_token: immersive_product_page_token,
+      };
+      results.push(result);
+    }
+    return results.sort((a, b) => b.currentPrice - a.currentPrice)[0];
+  } catch (error) {
+    console.error(`Error while fetching immersive product results: ${error}`);
+  }
+}
+
+function isKnownSite(site: string) {
+  return site?.match(/amazon|flipkart|croma|reliance/i) != null || false;
 }

@@ -1,46 +1,56 @@
-"use client"
+"use client";
 
-import { SearchResult } from '@/types';
-import Image from 'next/image';
-import Link from 'next/link';
-import React, { useEffect, useState } from 'react'
+import { SearchResult } from "@/types";
+import Image from "next/image";
+import Link from "next/link";
+import React, { useEffect, useState } from "react";
 import { formatNumber } from "@/lib/utils";
-import { scrapeAndStoreProduct } from '@/lib/actions';
+import { scrapeAndStoreProduct } from "@/lib/actions";
+import { extractFromImmersiveProduct } from "@/lib/serpapi";
 
-interface Props {
+type Props = {
   result: SearchResult;
-}
+};
 
-const isKnownSite = (url: string) => {
-  try {
-    const parsedURL = new URL(url);
-    const hostname = parsedURL.hostname;
-    console.log(hostname);
-    return hostname.includes('amazon.') || hostname.includes('flipkart.') || hostname.includes('croma.') || hostname.includes('reliancedigital.in')
-  } catch (error) {
-    return false;
-  }
-}
+// const isKnownSite = (url: string) => {
+//   try {
+//     const parsedURL = new URL(url);
+//     const hostname = parsedURL.hostname;
+//     console.log(hostname);
+//     return hostname.match(/amazon|flipkart|croma|reliance/i) != null;
+//   } catch (error) {
+//     return false;
+//   }
+// };
 
 const SearchResultCard = ({ result }: Props) => {
-
   const [email, setEmail] = useState("");
   useEffect(() => {
     const storedEmail = localStorage.getItem("email");
-    if (storedEmail) setEmail(storedEmail)
+    if (storedEmail) setEmail(storedEmail);
   }, []);
 
   const handleRedirect = async (e: any) => {
     e.preventDefault();
-    if (isKnownSite(result.productLink)) {
-      const productId = await scrapeAndStoreProduct(result.productLink, email);
-      if (productId) open(`products/${productId?.id}`, '_blank')
-    }
-    else open(result.productLink, '_blank')
-  }
+    if (result.immersive_product_page_token) {
+      const product = await extractFromImmersiveProduct(
+        result.immersive_product_page_token,
+        result.thumbnail
+      );
+      const productId = await scrapeAndStoreProduct(
+        product?.productLink,
+        email
+      );
+      if (productId) open(`products/${productId?.id}`, "_blank");
+    } else if (result.productLink != "#") open(result.productLink, "_blank");
+  };
 
   return (
-    <Link href={result.productLink} className="product-card" onClick={handleRedirect}>
+    <Link
+      href={result.productLink}
+      className="product-card"
+      onClick={handleRedirect}
+    >
       <div className="product-card_img-container">
         <Image
           src={result.thumbnail}
@@ -66,7 +76,7 @@ const SearchResultCard = ({ result }: Props) => {
         </div>
       </div>
     </Link>
-  )
-}
+  );
+};
 
-export default SearchResultCard
+export default SearchResultCard;

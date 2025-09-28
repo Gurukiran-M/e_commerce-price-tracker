@@ -28,18 +28,19 @@ export type Products = {
 };
 
 export type ProductDescription = {
-  specifications: any,
-  features: Array<any>
-}
+  specifications: any;
+  features: Array<any>;
+};
 
 export type SearchResult = {
-  productName: string,
-  currentPrice: number,
-  currency: string,
-  productLink: string,
-  thumbnail: string,
-  site: string
-}
+  productName: string;
+  currentPrice: number;
+  currency: string;
+  productLink: string;
+  thumbnail: string;
+  site: string;
+  immersive_product_page_token: string | undefined;
+};
 
 export type NotificationType =
   | "WELCOME"
